@@ -1,7 +1,6 @@
 import Login from "./components/Login";
 import Home from "./components/Home";
-import { useState, useEffect } from "react";
-
+import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 
@@ -12,6 +11,8 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [token, setToken] = useState("");
+
   const navigate = useNavigate();
 
   let data = qs.stringify({
@@ -31,12 +32,6 @@ function App() {
     data: data,
   };
 
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/homepage");
-    }
-  }, []);
-
   const login = () => {
     axios(config)
       .then(function (response) {
@@ -44,6 +39,7 @@ function App() {
           "token",
           JSON.stringify(response.data.access_token)
         );
+        setToken(response.data.access_token);
         navigate("/homepage");
         setError("");
       })
@@ -78,7 +74,7 @@ function App() {
           }
         />
 
-        <Route path="/homepage" element={<Home email={email} />} />
+        <Route path="/homepage" element={<Home token={token} />} />
       </Routes>
     </>
   );

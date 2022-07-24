@@ -276,14 +276,6 @@ const Cards = () => {
       >
         <TaskBoardToolbar>
           <Form className="d-flex">
-            {/* <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-              onChange={onSearchChange}
-              value={filter}
-            /> */}
             <Input
               placeholder="Search..."
               onChange={onSearchChange}

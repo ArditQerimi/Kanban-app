@@ -1,7 +1,6 @@
 import classes from "./Login.module.css";
 
 const Login = ({ password, setPassword, email, setEmail, login, error }) => {
-  console.log(error);
   const handleEmail = (e) => {
     setEmail(e.target.value);
   };
@@ -14,11 +13,11 @@ const Login = ({ password, setPassword, email, setEmail, login, error }) => {
     <div className={classes.loginContainer}>
       <div className={classes.login}>
         <div className={classes.header}>Log in</div>
-        {/* <form className={classes.loginform}> */}
+
         <input
           value={email}
           type="text"
-          placeholder="Email or Username"
+          placeholder="Email "
           onChange={handleEmail}
           className={classes.input}
         />
