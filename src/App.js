@@ -2,8 +2,9 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import { useState, useEffect } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
+
 const qs = require("qs");
 let axios = require("axios");
 
@@ -32,6 +33,7 @@ function App() {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
+      navigate("/homepage");
     }
   }, []);
 
@@ -53,6 +55,12 @@ function App() {
   return (
     <>
       <Routes>
+        {localStorage.getItem("token") ? (
+          <Route path="/" element={<Navigate replace to="/homepage" />} />
+        ) : (
+          <Route path="/" element={<Navigate replace to="/login" />} />
+        )}
+
         <Route
           path="/login"
           element={

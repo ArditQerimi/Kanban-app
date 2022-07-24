@@ -1,8 +1,4 @@
 import classes from "./Login.module.css";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Alert } from "react-bootstrap";
-const axios = require("axios");
 
 const Login = ({ password, setPassword, email, setEmail, login, error }) => {
   console.log(error);
