@@ -1,43 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/4.42.0/default/default-main.css">
+  </link>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+    rel="stylesheet">
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+  <title>React App</title>
+  <style>
+    .k-taskboard-column-header {
+      background-color: #9dd4b2;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+    .k-taskboard-card.k-taskboard-card-category {
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+      border-radius: 10px;
+    }
+
+    .k-taskboard-column {
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+      border-radius: 10px;
+    }
+
+    .k-taskboard-columns-container {
+      border-radius: 0.375rem;
+    }
+
+    .k-taskboard-card .k-card-title {
+      color: #ff6358;
+    }
+
+    .k-input {
+      display: block;
+      width: 100%;
+      padding: 1.15rem 0.75rem;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #212529;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid #ced4da;
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: 10px;
+      transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+
+    }
+
+    .k-taskboard-card .k-card-title {
+      color: #000;
+      font-size: 18px;
+      font-weight: 500;
+
+    }
+
+    .d-flex {
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .k-rounded-md {
+      border-radius: 0.375rem !important;
+    }
+
+    .k-input:focus,
+
+    .uneditable-input:focus {
+      /* border-color: rgba(126, 239, 104, 0.8);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(126, 239, 104, 0.6); */
+      outline: 0 none;
+      border-color: #85bdf4;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #85bdf4;
+    }
+
+    @keyframes k-loading-animation {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .k-i-loading.k-example-loading {
+      font-size: 64px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgb(144, 152, 165);
+    }
+
+    .k-i-loading.k-example-loading::before,
+    .k-i-loading.k-example-loading::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: inline-block;
+      content: "";
+      box-sizing: inherit;
+      border-radius: 50%;
+      border-width: .05em;
+      border-style: solid;
+      border-color: currentColor;
+      border-top-color: transparent;
+      border-bottom-color: transparent;
+      background-color: transparent;
+    }
+
+    .k-icon.k-i-loading.k-example-loading::before,
+    .k-icon.k-i-loading::after {
+      content: "";
+    }
+
+    .k-i-loading.k-example-loading::before {
+      margin-top: -0.5em;
+      margin-left: -0.5em;
+      width: 1em;
+      height: 1em;
+      animation: k-loading-animation .7s linear infinite;
+    }
+
+    .k-i-loading.k-example-loading::after {
+      margin-top: -0.25em;
+      margin-left: -0.25em;
+      width: .5em;
+      height: .5em;
+      animation: k-loading-animation reverse 1.4s linear infinite;
+    }
+
+    .example-wrapper {
+      min-height: 280px;
+      align-content: flex-start;
+    }
+
+    .example-wrapper p,
+    .example-col p {
+      margin: 20px 0 10px;
+    }
+
+    .example-wrapper p:first-child,
+    .example-col p:first-child {
+      margin-top: 0;
+    }
+
+    .example-col {
+      display: inline-block;
+      vertical-align: top;
+      padding-right: 20px;
+      padding-bottom: 20px;
+    }
+
+    .example-config {
+      margin: 0 0 20px;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, .03);
+      border: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    .event-log {
+      margin: 0;
+      padding: 0;
+      max-height: 100px;
+      overflow-y: auto;
+      list-style-type: none;
+      border: 1px solid rgba(0, 0, 0, .08);
+      background-color: white;
+    }
+
+    .event-log li {
+      margin: 0;
+      padding: .3em;
+      line-height: 1.2em;
+      border-bottom: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    .event-log li:last-child {
+      margin-bottom: -1px;
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+
+</body>
+
 </html>
