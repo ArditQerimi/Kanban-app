@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { useEffect, useLayoutEffect } from "react";
 import { TaskBoard, TaskBoardToolbar } from "@progress/kendo-react-taskboard";
 import { Button } from "@progress/kendo-react-buttons";
 import { Input } from "@progress/kendo-react-inputs";
@@ -17,6 +18,19 @@ import { CardBody } from "@progress/kendo-react-layout";
 import { Container } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Btn from "react-bootstrap/esm/Button";
+
+var axios = require("axios");
+var data = "";
+
+var config = {
+  method: "get",
+  url: "https://my-json-server.typicode.com/ArditQerimi/Kanban-app/db",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: "Bearer ",
+  },
+  data: data,
+};
 
 export const cards = [
   {
@@ -88,11 +102,6 @@ export const cards = [
       "https://demos.telerik.com/kendo-ui/content/web/taskboard/taskboard-demo-illustrations-13.png",
   },
 ];
-
-const images = {};
-cards.forEach((card) => {
-  images[String(card.id)] = card.image;
-});
 
 export const Card = (props) => {
   return <TaskBoardCard {...props} />;
@@ -178,13 +187,6 @@ export const Column = (props) => {
   return <TaskBoardColumn {...props} header={ColumnHeader} />;
 };
 
-const tasks = cards.map((c) => ({
-  id: c.id,
-  title: c.title,
-  description: c.description,
-  status: c.status,
-  priority: c.priority,
-}));
 const columns = [
   {
     id: 1,
@@ -219,8 +221,40 @@ const priorities = [
 
 const Cards = () => {
   const [filter, setFilter] = React.useState("");
-  const [taskData, setTaskData] = React.useState(tasks);
+
   const [columnsData, setColumnsData] = React.useState(columns);
+  const [fetchData, setFetchData] = React.useState();
+  console.log(fetchData);
+
+  // const fetchedData = fetchData.map((c) => c.id);
+  // console.log("-------------------------");
+  // console.log(fetchedData);
+  // console.log("-------------------------");
+
+  useEffect(() => {
+    const data = () => {
+      axios(config)
+        .then(function (response) {
+          console.log(response.data.todo.map((res) => res.id));
+          setFetchData(response.data.todo);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+    data();
+  }, []);
+
+  const tasks = cards.map((c) => ({
+    id: c.id,
+    title: c.title,
+    description: c.description,
+    status: c.status,
+    priority: c.priority,
+  }));
+
+  const [taskData, setTaskData] = React.useState(tasks);
+
   const onSearchChange = React.useCallback((event) => {
     setFilter(event.value);
   }, []);

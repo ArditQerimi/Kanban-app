@@ -34,7 +34,7 @@ function NavbarFunction() {
         axios(config)
           .then(function (response) {
             setEmail(response.data.email);
-            console.log(response.data);
+            // console.log(response.data);
           })
           .catch(function (error) {
             console.log(error);
