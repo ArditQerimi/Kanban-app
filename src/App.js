@@ -57,6 +57,8 @@ function App() {
           <Route path="/" element={<Navigate replace to="/login" />} />
         )}
 
+        <Route path="/homepage" element={<Home token={token} />} />
+
         <Route
           path="/login"
           element={
@@ -73,8 +75,6 @@ function App() {
             />
           }
         />
-
-        <Route path="/homepage" element={<Home token={token} />} />
       </Routes>
     </>
   );
