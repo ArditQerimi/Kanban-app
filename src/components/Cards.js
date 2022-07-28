@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect } from "react";
 import { TaskBoard, TaskBoardToolbar } from "@progress/kendo-react-taskboard";
 import { Button } from "@progress/kendo-react-buttons";
 import { Input } from "@progress/kendo-react-inputs";
+import ReactLoading from "react-loading";
 
 import { filterBy } from "@progress/kendo-data-query";
 
@@ -18,8 +19,8 @@ import { CardBody } from "@progress/kendo-react-layout";
 import { Container } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Btn from "react-bootstrap/esm/Button";
-
-var axios = require("axios");
+import axios from "axios";
+// var axios = require("axios");
 var data = "";
 
 var config = {
@@ -104,6 +105,11 @@ export const cards = [
 ];
 
 export const Card = (props) => {
+  // console.log("---------- Card ---------");
+  // console.log(props);
+  // console.log("---------- Card ---------");
+  // console.log(props.menuItems[0].data);
+
   return <TaskBoardCard {...props} />;
 };
 const themeColor = {
@@ -113,7 +119,11 @@ const themeColor = {
 };
 
 const ColumnHeader = (props) => {
+  // console.log("---------- ColumnHeader ---------");
+  // console.log(props);
+  // console.log("---------- ColumnHeader ---------");
   const { edit, title, status } = props.column;
+  // console.log(edit);
   return (
     <div
       className={"k-taskboard-column-header bg-dark text-white "}
@@ -184,7 +194,10 @@ const ColumnHeader = (props) => {
 };
 
 export const Column = (props) => {
-  return <TaskBoardColumn {...props} header={ColumnHeader} />;
+  // console.log("---------- Column ---------");
+  // console.log(props);
+  // console.log("---------- Column ---------");
+  return <TaskBoardColumn {...props} header={ColumnHeader} card={Card} />;
 };
 
 const columns = [
@@ -224,36 +237,42 @@ const Cards = () => {
 
   const [columnsData, setColumnsData] = React.useState(columns);
   const [fetchData, setFetchData] = React.useState();
+  const [spinner, setSpinner] = React.useState(true);
+  console.log("---------------------");
   console.log(fetchData);
-
-  // const fetchedData = fetchData.map((c) => c.id);
-  // console.log("-------------------------");
-  // console.log(fetchedData);
-  // console.log("-------------------------");
-
-  useEffect(() => {
-    const data = () => {
-      axios(config)
-        .then(function (response) {
-          console.log(response.data.todo.map((res) => res.id));
-          setFetchData(response.data.todo);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    };
-    data();
-  }, []);
-
-  const tasks = cards.map((c) => ({
+  console.log("---------------------");
+  const tasks = fetchData?.map((c) => ({
     id: c.id,
     title: c.title,
     description: c.description,
     status: c.status,
     priority: c.priority,
   }));
-
+  // console.log(tasks);
   const [taskData, setTaskData] = React.useState(tasks);
+
+  const data = () => {
+    const url = "https://my-json-server.typicode.com/ArditQerimi/Kanban-app/db";
+    axios.get(url).then((response) => {
+      setFetchData(response.data.todo);
+      setSpinner(false);
+    });
+  };
+  useEffect(() => {
+    data();
+  }, []);
+  const onDelete = (id) => {
+    console.log(id);
+    axios
+      .delete(
+        `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/todo/${id}`
+      )
+      .then(() => {
+        console.log("first");
+        data();
+      })
+      .catch((err) => console.log(err));
+  };
 
   const onSearchChange = React.useCallback((event) => {
     setFilter(event.value);
@@ -272,6 +291,7 @@ const Cards = () => {
     return filter ? filterBy(taskData, filterDesc) : taskData;
   }, [filter, taskData]);
   const onChangeHandler = React.useCallback((event) => {
+    // console.log(event);
     if (event.type === "column") {
       setColumnsData(event.data);
     } else {
@@ -294,35 +314,49 @@ const Cards = () => {
     setColumnsData([...columnsData, newColumn]);
   };
 
+  // return !fetchData ? (
+  //   <ReactLoading type={"balls"} color="#fff" />
+  // ) : (
+
+  // );
+
   return (
     <>
-      <TaskBoard
-        columnData={columnsData}
-        taskData={resultTasks}
-        priorities={priorities}
-        onChange={onChangeHandler}
-        column={Column}
-        card={Card}
-        style={{
-          height: "700px",
-        }}
-        tabIndex={0}
-      >
-        <TaskBoardToolbar>
-          <Form className="d-flex">
-            <Input
-              placeholder="Search..."
-              onChange={onSearchChange}
-              value={filter}
-            />
-            <Btn variant="outline-success">Search</Btn>
-          </Form>
-          <span className="k-spacer" />
-          <Btn icon="add" onClick={onAddColumn}>
-            Add Column
-          </Btn>
-        </TaskBoardToolbar>
-      </TaskBoard>
+      {spinner ? (
+        <ReactLoading type={"spin"} color="#000" />
+      ) : (
+        <>
+          <TaskBoard
+            columnData={columnsData}
+            taskData={resultTasks}
+            priorities={priorities}
+            onChange={onChangeHandler}
+            column={Column}
+            card={(props) => (
+              <Card {...props} onTaskDelete={(task) => onDelete(task.id)} />
+            )}
+            style={{
+              height: "700px",
+            }}
+            tabIndex={0}
+          >
+            <TaskBoardToolbar>
+              <Form className="d-flex">
+                <Input
+                  placeholder="Search..."
+                  onChange={onSearchChange}
+                  value={filter}
+                />
+                <Btn variant="outline-success">Search</Btn>
+              </Form>
+              <span className="k-spacer" />
+              <Btn icon="add" onClick={onAddColumn}>
+                Add Column
+              </Btn>
+            </TaskBoardToolbar>
+          </TaskBoard>
+        </>
+      )}
     </>
   );
 };
