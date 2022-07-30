@@ -5,7 +5,9 @@ import Navbar from "./Navbar";
 
 const Home = ({ token }) => {
   const [cards, setCards] = useState([]);
-  console.log(cards);
+  const [allData, setAllData] = useState([]);
+
+  // console.log(cards);
   const data = async () => {
     const url = "https://my-json-server.typicode.com/ArditQerimi/Kanban-app/db";
     await axios.get(url).then((response) => {
@@ -20,7 +22,14 @@ const Home = ({ token }) => {
   return (
     <div>
       <Navbar token={token} />
-      {cards.length > 0 && <Cards cardsArr={cards} setCards={setCards} />}
+      {cards.length > 0 && (
+        <Cards
+          cardsArr={cards}
+          setCards={setCards}
+          allData={allData}
+          setAllData={setAllData}
+        />
+      )}
     </div>
   );
 };

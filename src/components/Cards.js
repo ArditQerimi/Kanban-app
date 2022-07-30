@@ -20,6 +20,7 @@ import { Container } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Btn from "react-bootstrap/esm/Button";
 import axios from "axios";
+import { take } from "@progress/kendo-data-query/dist/npm/transducers";
 // var axios = require("axios");
 var data = "";
 
@@ -95,6 +96,9 @@ export const cards = [
 ];
 
 export const Card = (props) => {
+  // console.log("card");
+  // console.log(props);
+  // console.log("card");
   return <TaskBoardCard {...props} />;
 };
 const themeColor = {
@@ -104,6 +108,9 @@ const themeColor = {
 };
 
 const ColumnHeader = (props) => {
+  // console.log("columnheader");
+  // console.log(props);
+  // console.log("columnheader");
   const { edit, title, status } = props.column;
 
   return (
@@ -176,19 +183,22 @@ const ColumnHeader = (props) => {
 };
 
 export const Column = (props) => {
-  // console.log(props);
-  const onCreate = (tasks) => {
-    // console.log(tasks);
+  const onCreate = (tasks, task) => {
     props.setCards(tasks);
     var axios = require("axios");
     var qs = require("qs");
     var data = qs.stringify({
-      id: tasks.id,
-      title: tasks.title,
-      order: tasks.order,
-      description: tasks.description,
-      status: tasks.status,
+      id: `${task.id}`,
+      title: `${task.title}`,
+      priority: {
+        color: `${task.priority.color}`,
+        priority: `${task.priority.priority}`,
+      },
+      description: `${task.description}`,
+      status: `${task.status}`,
     });
+    // console.log("data");
+    // console.log(data);
     var config = {
       method: "post",
       url: "https://my-json-server.typicode.com/ArditQerimi/Kanban-app/todo",
@@ -200,7 +210,8 @@ export const Column = (props) => {
 
     axios(config)
       .then(function (response) {
-        console.log(response.data);
+        // console.log("response.data");
+        // console.log(JSON.stringify(response.data));
       })
       .catch(function (error) {
         console.log(error);
@@ -212,6 +223,8 @@ export const Column = (props) => {
       header={ColumnHeader}
       card={Card}
       onTaskCreate={(task) => {
+        console.log(props.column.status);
+
         console.log([
           ...props.tasks,
           {
@@ -223,11 +236,25 @@ export const Column = (props) => {
               priority: task.priority.priority,
             },
             // status: task.status,
-            status: "inProgress",
+            status: props.column.status,
           },
         ]);
-        onCreate([
-          ...props.tasks,
+
+        onCreate(
+          [
+            ...props.tasks,
+            {
+              id: Math.random(),
+              title: task.title,
+              description: task.description,
+              priority: {
+                color: task.priority.color,
+                priority: task.priority.priority,
+              },
+              // status: task.status,
+              status: props.column.status,
+            },
+          ],
           {
             id: Math.random(),
             title: task.title,
@@ -237,9 +264,9 @@ export const Column = (props) => {
               priority: task.priority.priority,
             },
             // status: task.status,
-            status: "inProgress",
-          },
-        ]);
+            status: props.column.status,
+          }
+        );
       }}
     />
   );
@@ -277,7 +304,9 @@ const priorities = [
   },
 ];
 
-const Cards = ({ cardsArr, setCards }) => {
+const Cards = ({ cardsArr, setCards, allData, setAllData }) => {
+  // console.log(...allData, cardsArr);
+  // setAllData(...allData, cardsArr);
   const [filter, setFilter] = React.useState("");
 
   const [columnsData, setColumnsData] = React.useState(columns);
@@ -289,10 +318,7 @@ const Cards = ({ cardsArr, setCards }) => {
     status: c.status,
     priority: { color: "orange", priority: "Urgent" },
   }));
-
-  const [taskData, setTaskData] = React.useState(tasks);
-  // setTaskData(tasks);
-  console.log(taskData);
+  // console.log(...tasks);
 
   const onSearchChange = React.useCallback((event) => {
     setFilter(event.value);
@@ -308,10 +334,9 @@ const Cards = ({ cardsArr, setCards }) => {
         },
       ],
     };
-    return filter ? filterBy(taskData, filterDesc) : taskData;
-  }, [filter, taskData]);
+    return filter ? filterBy(tasks, filterDesc) : tasks;
+  }, [filter, tasks]);
   const onChangeHandler = React.useCallback((event) => {
-    console.log(event);
     if (event.type === "column") {
       setColumnsData(event.data);
     } else {
@@ -320,7 +345,7 @@ const Cards = ({ cardsArr, setCards }) => {
         event.item.id = event.data.length + 1;
       }
 
-      setTaskData(event.data);
+      setCards(event.data);
     }
   }, []);
 
@@ -328,14 +353,18 @@ const Cards = ({ cardsArr, setCards }) => {
     const newColumn = {
       id: columnsData.length + 1,
       title: "New Column",
-      status: "new",
+      // status: "new",
       edit: true,
     };
     setColumnsData([...columnsData, newColumn]);
   };
 
+  // const onAddData = () => {
+  // setAllData([...allData, tasks]);
+  // };
+
   const onDelete = (id) => {
-    console.log(id);
+    // console.log(id);
     axios
       .delete(
         `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/todo/${id}`
@@ -343,7 +372,7 @@ const Cards = ({ cardsArr, setCards }) => {
       .then(() => {
         // console.log("first");
         setCards(cardsArr.filter((item) => item.id !== id));
-        console.log(cardsArr.filter((item) => item.id !== id));
+        // console.log(cardsArr.filter((item) => item.id !== id));
         // data();
       })
       .catch((err) => console.log(err));
@@ -365,6 +394,9 @@ const Cards = ({ cardsArr, setCards }) => {
               <Card {...props} onTaskDelete={() => onDelete(props.task.id)} />
             );
           }}
+          // onAddData={onAddData}
+          setAllData={setAllData}
+          allData={allData}
           style={{
             height: "700px",
           }}
