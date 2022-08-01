@@ -233,6 +233,8 @@ const priorities = [
 ];
 
 const Cards = ({ cardsArr, setCards }) => {
+  const axios = require("axios");
+  const qs = require("qs");
   const [filter, setFilter] = React.useState("");
 
   const [columnsData, setColumnsData] = React.useState(columns);
@@ -332,20 +334,41 @@ const Cards = ({ cardsArr, setCards }) => {
       status: edited.status,
       order: edited.order,
     };
-    // console.log(editedObj);
 
     // Object.assign(editingObj, editedObj);
     setCards(
       cardsArr.map((item) => (item.id === editedObj.id ? editedObj : item))
     );
-    // console.log(
-    //   cardsArr.map((item) => (item.id === editedObj.id ? editedObj : item))
-    // );
-    // console.log(result);
+
     console.log(
       `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/tasks/${prevTask.id}`
     );
-    // setCards(edited);
+
+    const data = qs.stringify({
+      title: edited.title,
+      description: edited.description,
+      priority: edited.priority,
+      userId: id,
+      order: edited.order,
+      id: edited.id,
+      status: edited.status,
+    });
+    var config = {
+      method: "put",
+      url: `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/tasks/${prevTask.id}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   return (
