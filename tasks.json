@@ -1,32 +1,7 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "email": "test@test.com",
-      "password": "12345678"
-    },
-    {
-      "id": 2,
-      "email": "ardit@test.com",
-      "password": "12345678"
-    }
-  ],
-  "userdata": [
-    {
-      "userId": 1,
-      "name": "Test",
-      "email": "test@test.com"
-    },
-    {
-      "userId": 2,
-      "name": "Ardit",
-      "email": "ardit@test.com"
-    }
-  ],
   "tasks": [
     {
       "id": 1,
-      "userId": 1,
       "title": "Task 1",
       "order": 1,
       "description": "Task 1",
@@ -38,19 +13,17 @@
     },
     {
       "id": 2,
-      "userId": 1,
       "title": "Task 2",
       "order": 2,
       "description": "Task 2",
-      "status": "done",
+      "status": "todo",
       "priority": {
-        "color": "orange",
-        "priority": "Urgent"
+        "color": "green",
+        "priority": "High Priority"
       }
     },
     {
       "id": 3,
-      "userId": 2,
       "title": "Task 3",
       "order": 4,
       "description": "Task 3",
@@ -62,7 +35,6 @@
     },
     {
       "id": 4,
-      "userId": 2,
       "title": "Task 4",
       "order": 10,
       "description": "Task 4",

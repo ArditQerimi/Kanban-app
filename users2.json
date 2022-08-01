@@ -42,10 +42,10 @@
       "title": "Task 2",
       "order": 2,
       "description": "Task 2",
-      "status": "done",
+      "status": "todo",
       "priority": {
-        "color": "orange",
-        "priority": "Urgent"
+        "color": "green",
+        "priority": "High Priority"
       }
     },
     {

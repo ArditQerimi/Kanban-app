@@ -1,5 +1,6 @@
 import Login from "./components/Login";
 import Home from "./components/Home";
+
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
@@ -11,21 +12,20 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [token, setToken] = useState("");
+  const [fetchedData, setFetchedData] = useState();
+  // console.log(fetchedData);
 
   const navigate = useNavigate();
 
-  let data = qs.stringify({
-    username: email,
+  var axios = require("axios");
+  var qs = require("qs");
+  var data = qs.stringify({
+    email: email,
     password: password,
-    grant_type: "password",
-    scope: "",
-    client_id: "1",
-    client_secret: "akDXnrIjbAEEMB6hWi7VE7JQwikYBPrE4lyYetnf",
   });
-  let config = {
-    method: "post",
-    url: "http://homework.tachyonstudio.com/oauth/token",
+  var config = {
+    method: "get",
+    url: `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/users/?email=${email}&passwrod=${password}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -35,29 +35,28 @@ function App() {
   const login = () => {
     axios(config)
       .then(function (response) {
-        localStorage.setItem(
-          "token",
-          JSON.stringify(response.data.access_token)
-        );
-        setToken(response.data.access_token);
+        console.log(response.data);
+
+        setFetchedData(response.data);
+        localStorage.setItem("user", JSON.stringify(response.data));
+
         navigate("/homepage");
-        setError("");
       })
       .catch(function (error) {
-        setError(error.message);
+        console.log(error);
       });
   };
 
   return (
     <>
       <Routes>
-        {localStorage.getItem("token") ? (
+        {localStorage.getItem("data") ? (
           <Route path="/" element={<Navigate replace to="/homepage" />} />
         ) : (
           <Route path="/" element={<Navigate replace to="/login" />} />
         )}
 
-        <Route path="/homepage" element={<Home token={token} />} />
+        <Route path="/homepage" element={<Home data={fetchedData} />} />
 
         <Route
           path="/login"
@@ -67,8 +66,6 @@ function App() {
               setEmail={setEmail}
               password={password}
               setPassword={setPassword}
-              data={data}
-              config={config}
               login={login}
               error={error}
               setError={setError}

@@ -1,104 +1,19 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { useEffect, useLayoutEffect } from "react";
-import { TaskBoard, TaskBoardToolbar } from "@progress/kendo-react-taskboard";
+
+import { TaskBoard } from "@progress/kendo-react-taskboard";
 import { Button } from "@progress/kendo-react-buttons";
 import { Input } from "@progress/kendo-react-inputs";
-import ReactLoading from "react-loading";
 
 import { filterBy } from "@progress/kendo-data-query";
 
 import { classNames } from "@progress/kendo-react-common";
 import { Badge, BadgeContainer } from "@progress/kendo-react-indicators";
 import { TaskBoardColumn } from "@progress/kendo-react-taskboard";
-import {
-  TaskBoardCard,
-  TaskBoardCardHeader,
-} from "@progress/kendo-react-taskboard";
-import { CardBody } from "@progress/kendo-react-layout";
-import { Container } from "react-bootstrap";
-import Form from "react-bootstrap/Form";
-import Btn from "react-bootstrap/esm/Button";
+import { TaskBoardCard } from "@progress/kendo-react-taskboard";
+
 import axios from "axios";
-import { take } from "@progress/kendo-data-query/dist/npm/transducers";
-// var axios = require("axios");
-var data = "";
-
-export const cards = [
-  {
-    id: 1,
-    title: "Task 1",
-    order: 1,
-    description: "Task 1",
-    status: "inProgress",
-    priority: {
-      color: "orange",
-      priority: "Urgent",
-    },
-    image:
-      "https://demos.telerik.com/kendo-ui/content/web/taskboard/taskboard-demo-illustrations-04.png",
-  },
-  {
-    id: 2,
-    title: "Task title",
-    order: 1,
-    description: "Task description",
-    status: "todo",
-    priority: {
-      color: "orange",
-      priority: "Urgent",
-    },
-    image:
-      "https://demos.telerik.com/kendo-ui/content/web/taskboard/taskboard-demo-illustrations-05.png",
-  },
-
-  {
-    id: 3,
-    title: "Task 3",
-    order: 2,
-    description: "Task 3",
-    status: "todo",
-    priority: {
-      color: "orange",
-      priority: "Urgent",
-    },
-    image:
-      "https://demos.telerik.com/kendo-ui/content/web/taskboard/taskboard-demo-illustrations-08.png",
-  },
-
-  {
-    id: 4,
-    title: "Task 4",
-    order: 2,
-    description: "Task 4",
-    status: "inProgress",
-    priority: {
-      color: "blue",
-      priority: "High Priority",
-    },
-    image:
-      "https://demos.telerik.com/kendo-ui/content/web/taskboard/taskboard-demo-illustrations-11.png",
-  },
-
-  {
-    id: 5,
-    title: "Task 5",
-    order: 1,
-    description: "Task 5",
-    status: "done",
-    priority: {
-      color: "green",
-      priority: "Low Priority",
-    },
-    image:
-      "https://demos.telerik.com/kendo-ui/content/web/taskboard/taskboard-demo-illustrations-13.png",
-  },
-];
 
 export const Card = (props) => {
-  // console.log("card");
-  // console.log(props);
-  // console.log("card");
   return <TaskBoardCard {...props} />;
 };
 const themeColor = {
@@ -108,9 +23,6 @@ const themeColor = {
 };
 
 const ColumnHeader = (props) => {
-  // console.log("columnheader");
-  // console.log(props);
-  // console.log("columnheader");
   const { edit, title, status } = props.column;
 
   return (
@@ -159,30 +71,35 @@ const ColumnHeader = (props) => {
           "k-disabled": edit,
         })}
       >
-        <Button
+        {/* <Button
           fillMode="flat"
           icon="edit"
           title={props.editButtonTitle}
           onClick={props.onColumnEnterEdit}
-        />
+        /> */}
         <Button
           fillMode="flat"
           icon="add"
           title={props.addButtonTitle}
           onClick={props.onShowAddCardDialog}
         />
-        <Button
+        {/* <Button
           fillMode="flat"
           icon="close"
           title={props.closeButtonTitle}
           onClick={props.onColumnDelete}
-        />
+        /> */}
       </div>
     </div>
   );
 };
 
 export const Column = (props) => {
+  // console.log(props);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const id = user[0].id;
+
   const onCreate = (tasks, task) => {
     props.setCards(tasks);
     var axios = require("axios");
@@ -196,12 +113,12 @@ export const Column = (props) => {
       },
       description: `${task.description}`,
       status: `${task.status}`,
+      order: `${props.children.length}`,
+      userId: `${id}`,
     });
-    // console.log("data");
-    // console.log(data);
     var config = {
       method: "post",
-      url: "https://my-json-server.typicode.com/ArditQerimi/Kanban-app/todo",
+      url: "https://my-json-server.typicode.com/ArditQerimi/Kanban-app/tasks",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -211,60 +128,66 @@ export const Column = (props) => {
     axios(config)
       .then(function (response) {
         // console.log("response.data");
-        // console.log(JSON.stringify(response.data));
+        console.log(JSON.stringify(response.data));
       })
       .catch(function (error) {
         console.log(error);
       });
   };
+  const [order, setOrder] = React.useState(props.children.length);
+
+  const taskId = Math.random();
   return (
     <TaskBoardColumn
       {...props}
       header={ColumnHeader}
       card={Card}
       onTaskCreate={(task) => {
-        console.log(props.column.status);
+        setOrder(order + 1);
 
         console.log([
-          ...props.tasks,
+          ...props.cardsArr,
           {
-            id: Math.random(),
+            id: taskId,
             title: task.title,
             description: task.description,
             priority: {
               color: task.priority.color,
               priority: task.priority.priority,
             },
-            // status: task.status,
             status: props.column.status,
+            order: order + 1,
+            userId: id,
           },
         ]);
 
         onCreate(
           [
-            ...props.tasks,
+            ...props.cardsArr,
             {
-              id: Math.random(),
+              id: taskId,
               title: task.title,
               description: task.description,
               priority: {
                 color: task.priority.color,
                 priority: task.priority.priority,
               },
-              // status: task.status,
               status: props.column.status,
+              order: order + 1,
+              userId: id,
             },
           ],
           {
-            id: Math.random(),
+            id: taskId,
             title: task.title,
             description: task.description,
             priority: {
               color: task.priority.color,
               priority: task.priority.priority,
             },
-            // status: task.status,
             status: props.column.status,
+            order: order + 1,
+            userId: id,
           }
         );
       }}
@@ -288,6 +211,11 @@ const columns = [
     title: "Done",
     status: "done",
   },
+  {
+    id: 4,
+    title: "In Review",
+    status: "review",
+  },
 ];
 const priorities = [
   {
@@ -304,9 +232,7 @@ const priorities = [
   },
 ];
 
-const Cards = ({ cardsArr, setCards, allData, setAllData }) => {
-  // console.log(...allData, cardsArr);
-  // setAllData(...allData, cardsArr);
+const Cards = ({ cardsArr, setCards }) => {
   const [filter, setFilter] = React.useState("");
 
   const [columnsData, setColumnsData] = React.useState(columns);
@@ -316,13 +242,14 @@ const Cards = ({ cardsArr, setCards, allData, setAllData }) => {
     title: c.title,
     description: c.description,
     status: c.status,
-    priority: { color: "orange", priority: "Urgent" },
+    priority: c.priority,
+    order: c.order,
+    userId: c.userId,
   }));
-  // console.log(...tasks);
-
-  const onSearchChange = React.useCallback((event) => {
-    setFilter(event.value);
-  }, []);
+  console.log(tasks);
+  // const onSearchChange = React.useCallback((event) => {
+  //   setFilter(event.value);
+  // }, []);
   const resultTasks = React.useMemo(() => {
     const filterDesc = {
       logic: "and",
@@ -337,6 +264,26 @@ const Cards = ({ cardsArr, setCards, allData, setAllData }) => {
     return filter ? filterBy(tasks, filterDesc) : tasks;
   }, [filter, tasks]);
   const onChangeHandler = React.useCallback((event) => {
+    var qs = require("qs");
+    var data = qs.stringify({
+      status: event.item.status,
+    });
+    var config = {
+      method: "patch",
+      url: `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/tasks/${event.item.id}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     if (event.type === "column") {
       setColumnsData(event.data);
     } else {
@@ -349,33 +296,56 @@ const Cards = ({ cardsArr, setCards, allData, setAllData }) => {
     }
   }, []);
 
-  const onAddColumn = () => {
-    const newColumn = {
-      id: columnsData.length + 1,
-      title: "New Column",
-      // status: "new",
-      edit: true,
-    };
-    setColumnsData([...columnsData, newColumn]);
-  };
-
-  // const onAddData = () => {
-  // setAllData([...allData, tasks]);
-  // };
-
   const onDelete = (id) => {
-    // console.log(id);
+    console.log(id);
+    setCards(cardsArr.filter((item) => item.id !== id));
+    console.log(
+      `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/tasks/${id}`
+    );
     axios
       .delete(
-        `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/todo/${id}`
+        `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/tasks/${id}`
       )
       .then(() => {
-        // console.log("first");
         setCards(cardsArr.filter((item) => item.id !== id));
-        // console.log(cardsArr.filter((item) => item.id !== id));
-        // data();
+        console.log(cardsArr.filter((item) => item.id !== id));
       })
       .catch((err) => console.log(err));
+  };
+
+  // const [edit, setEdit] = React.useState(tasks);
+  // console.log(edit);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const id = user[0].id;
+
+  const onEdit = (edited, prevTask) => {
+    console.log(edited, prevTask);
+    const editingObj = cardsArr.find((item) => item.id === prevTask.id);
+    // console.log(editingObj);
+    const editedObj = {
+      id: edited.id,
+      userId: id,
+      title: edited.title,
+      description: edited.description,
+      priority: edited.priority,
+      status: edited.status,
+      order: edited.order,
+    };
+    // console.log(editedObj);
+
+    // Object.assign(editingObj, editedObj);
+    setCards(
+      cardsArr.map((item) => (item.id === editedObj.id ? editedObj : item))
+    );
+    // console.log(
+    //   cardsArr.map((item) => (item.id === editedObj.id ? editedObj : item))
+    // );
+    // console.log(result);
+    console.log(
+      `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/tasks/${prevTask.id}`
+    );
+    // setCards(edited);
   };
 
   return (
@@ -387,36 +357,26 @@ const Cards = ({ cardsArr, setCards, allData, setAllData }) => {
           priorities={priorities}
           onChange={onChangeHandler}
           column={(props) => {
-            return <Column {...props} setCards={setCards} />;
+            // console.log(props);
+            return (
+              <Column
+                {...props}
+                setCards={setCards}
+                cardsArr={cardsArr}
+                onTaskEdit={(edited, prevTask) => onEdit(edited, prevTask)}
+              />
+            );
           }}
           card={(props) => {
             return (
               <Card {...props} onTaskDelete={() => onDelete(props.task.id)} />
             );
           }}
-          // onAddData={onAddData}
-          setAllData={setAllData}
-          allData={allData}
           style={{
             height: "700px",
           }}
           tabIndex={0}
-        >
-          <TaskBoardToolbar>
-            <Form className="d-flex">
-              <Input
-                placeholder="Search..."
-                onChange={onSearchChange}
-                value={filter}
-              />
-              <Btn variant="outline-success">Search</Btn>
-            </Form>
-            <span className="k-spacer" />
-            <Btn icon="add" onClick={onAddColumn}>
-              Add Column
-            </Btn>
-          </TaskBoardToolbar>
-        </TaskBoard>
+        ></TaskBoard>
       </>
     </>
   );

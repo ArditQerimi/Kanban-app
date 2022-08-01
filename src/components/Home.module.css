@@ -10,3 +10,15 @@
   padding: 1.5rem 1rem;
   border: 1px solid #b6effb;
 }
+
+.navlinks {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+#root > div > div.Home_navlinks__9tx0i.nav.nav-pills {
+  margin: 20px;
+}

@@ -10,30 +10,31 @@ function NavbarFunction() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
+  console.log(email);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const id = user[0].id;
+  console.log(id);
 
   const logOut = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/login");
   };
 
-  var data = "";
+  var axios = require("axios");
 
   var config = {
     method: "get",
-    url: "http://homework.tachyonstudio.com/api/user",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
-    },
-    data: data,
+    url: `https://my-json-server.typicode.com/ArditQerimi/Kanban-app/userdata?userId=${id}`,
+    headers: {},
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("user")) {
       const getlogindata = () => {
         axios(config)
           .then(function (response) {
-            setEmail(response.data.email);
+            setEmail(response.data[0].email);
             // console.log(response.data);
           })
           .catch(function (error) {
@@ -62,7 +63,11 @@ function NavbarFunction() {
             <Nav.Link href="#home">
               <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
-                  Hello <a href="#login">{email ? email : ""}</a>
+                  Hello{" "}
+                  <a href="#login">
+
+                    {email}
+                  </a>
                 </Navbar.Text>
               </Navbar.Collapse>
             </Nav.Link>
